@@ -1,0 +1,34 @@
+---------select ----------------
+Customers (
+    CustomerID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    City VARCHAR(50)
+)
+
+Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT,
+    OrderDate DATE,
+    TotalAmount DECIMAL(10,2)
+)
+---------A complex query to get total spending per customer in 2024 might look like----------------------
+SELECT 
+    c.CustomerID,
+    c.Name,
+    c.City,
+    SUM(o.TotalAmount) AS TotalSpent
+FROM Customers c
+JOIN Orders o ON c.CustomerID = o.CustomerID
+WHERE YEAR(o.OrderDate) = 2024
+GROUP BY c.CustomerID, c.Name, c.City
+HAVING SUM(o.TotalAmount) > 5000
+ORDER BY TotalSpent DESC;
+--------Create a View-------
+CREATE VIEW HighValueCustomers AS
+SELECT Name, City, SUM(TotalAmount) AS TotalSpent
+FROM Customers
+JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+GROUP BY Name, City;
+------Use the View-------
+SELECT * FROM HighValueCustomers;
+ORDER BY TotalSpent DESC;
